@@ -2,7 +2,7 @@
 route and the labels derived from it never leave the server.
 
 Labels and the "reliable fix" flag come from the same cleaning code that produced the training labels
-(pipeline/clean.py, rules C4-C8), so the numbers match the notebooks.
+(data_processing/clean.py, rules C4-C8), so the numbers match the notebooks.
 """
 import sys
 import tempfile
@@ -13,11 +13,13 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 
-import config
+# make the other code folders importable (config lives in deployment/, the pipeline code in the folders below)
+_REPO = Path(__file__).resolve().parent.parent
+for _d in ("deployment", "data_processing", "hmm_viterbi", "model_training"):
+    if str(_REPO / _d) not in sys.path:
+        sys.path.insert(0, str(_REPO / _d))
 
-for _p in (config.PIPELINE_DIR, config.ANALYSIS_DIR):
-    if str(_p) not in sys.path:
-        sys.path.insert(0, str(_p))
+import config  # noqa: E402
 
 import clean  # noqa: E402
 

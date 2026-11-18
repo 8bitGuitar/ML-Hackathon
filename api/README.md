@@ -1,4 +1,4 @@
-# PathSnap backend: what was built
+# PathSnap API (backend): what was built
 
 The backend takes one raw GPS trip, matches it to the road network with the final model (tuned HistGradientBoosting
 classifier + HMM/Viterbi) and returns the predicted route with accuracy and route continuity. It runs on laptop 1.
@@ -7,11 +7,11 @@ classifier + HMM/Viterbi) and returns the predicted route with accuracy and rout
 
 | File | Role |
 |---|---|
-| `config.py` | Host, port, API address, eval-trip folder and model folder. Each can be overridden by an environment variable. |
+| `deployment/config.py` | Host, port, API address, eval-trip folder and model folder. Each can be overridden by an environment variable. |
 | `predict.py` | `match_trip(trip_dir)`: raw trip in, matched route out. Task 1 of the brief. |
 | `scoring.py` | Accuracy and route continuity against the true route. Server side only. |
 | `api.py` | FastAPI app that lists the trips and runs a chosen trip through `predict.py` and `scoring.py`. |
-| `pipeline/pathsnap_hmm.py` | Two small backward-compatible changes (see below). |
+| `hmm_viterbi/pathsnap_hmm.py` | Two small backward-compatible changes (see below). |
 
 ## `predict.py`: the pipeline for one unseen trip
 
@@ -23,7 +23,7 @@ Reads only `<id>.track`, `<id>.nodes` and `<id>.arcs`. The `.route` file is neve
 2. **Candidates:** every eligible arc within 50 m of each fix, topped up to at least 5 (KD-tree over points sampled
    every 10 m along arcs).
 3. **Features:** the 13 selected features, copied from `feature_engineering.ipynb` with the label columns removed.
-4. **Classifier:** `models_out/final_model/classifier.joblib` gives a probability per candidate.
+4. **Classifier:** `results/final_model/classifier.joblib` gives a probability per candidate.
 5. **HMM:** `pathsnap_hmm.py` with the settings from `hmm_config.json` (beta 3, vmax 50 m/s, ...) gives one arc per
    fix, then a connected arc sequence is built with shortest-path fill.
 
@@ -63,14 +63,14 @@ the same `clean.py` code that produced the training labels, so the numbers are c
 
 ## Changes to existing code
 
-`pipeline/pathsnap_hmm.py` normally reads `data_clean/`. Two backward-compatible additions let the API run without it:
+`hmm_viterbi/pathsnap_hmm.py` normally reads `data_clean/`. Two backward-compatible additions let the API run without it:
 `TripNet(arrays=(from, to, length, eligible))` and `prepare_trip(..., fx=<fixes table>)`. The notebooks are unaffected.
 
 ## Verification
 
 All 10 `student_test` trips were run through the live API.
 
-- Route F1 and continuity match `models_out/hmm/per_trip_student_test.csv` (checked on trips `00000007` and
+- Route F1 and continuity match `results/hmm/per_trip_student_test.csv` (checked on trips `00000007` and
   `00000009`).
 - Reliable-fix accuracy is within one fix of the notebook (trip `00000009`: 92.09% against 92.18%). Training rounds
   coordinates to 3 decimals, which probably explains the difference.
@@ -80,8 +80,8 @@ All 10 `student_test` trips were run through the live API.
 ## Running it
 
 ```
-python -m venv .venv && .venv/bin/pip install -r requirements.txt     # requirements.txt is still to be written
-.venv/bin/python api.py                                                  # laptop 1
+python -m venv .venv && .venv/bin/pip install -r deployment/requirements.txt
+.venv/bin/python api/api.py                                              # laptop 1, from the repo root
 ```
 
 Settings by environment variable: `PATHSNAP_API_HOST`, `PATHSNAP_API_PORT`, `PATHSNAP_EVAL_DIR`, `PATHSNAP_MODEL_DIR`.
@@ -89,5 +89,4 @@ The default evaluation folder is `../Student folder/student_test`.
 
 ## Open points
 
-- `requirements.txt` and the README are not written yet.
 - Laptop 1's firewall may need to allow the API port.

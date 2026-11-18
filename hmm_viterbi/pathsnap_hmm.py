@@ -13,12 +13,16 @@ Breaks          : the chain is cut and restarted (a) at segment boundaries (time
 Skipped fixes   : position jumps (cleaning C8) and fixes without candidates are not decoded; they inherit the
                   arc of the nearest decoded fix before them (or after, at the start).
 """
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
 
-from pathsnap_common import load_arcs, load_fixes
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "model_training"))
+from pathsnap_common import load_arcs, load_fixes  # noqa: E402
 
 DEFAULTS = dict(beta=5.0, vmax=50.0, slack=30.0, back_tol=15.0, limit=2500.0, p_floor=1e-6)
 
@@ -26,8 +30,9 @@ DEFAULTS = dict(beta=5.0, vmax=50.0, slack=30.0, back_tol=15.0, limit=2500.0, p_
 class TripNet:
     """Directed road graph of one trip (eligible arcs only) with shortest-path helpers."""
 
-    def __init__(self, part, tidx):
-        fr, to, length, elig = load_arcs(part, tidx)
+    def __init__(self, part=None, tidx=None, arrays=None):
+        # arrays=(from, to, length, eligible) lets the API build the graph from a raw trip (no data_clean/)
+        fr, to, length, elig = arrays if arrays is not None else load_arcs(part, tidx)
         self.fr, self.to, self.len = fr, to, length
         self.n = int(max(fr.max(), to.max())) + 1
         e = np.flatnonzero(elig & (fr != to))
@@ -68,10 +73,10 @@ def _lookup(table, s_nodes, d_nodes):
     return D[np.searchsorted(src_u, s_nodes)[:, None], np.searchsorted(dst_u, d_nodes)[None, :]]
 
 
-def prepare_trip(part, tidx, rows, p, net=None, limit=DEFAULTS["limit"]):
+def prepare_trip(part, tidx, rows, p, net=None, limit=DEFAULTS["limit"], fx=None):
     """Group candidate rows of one trip by fix and precompute the distance table (independent of beta)."""
     net = net or TripNet(part, tidx)
-    fx = load_fixes(part)[tidx]
+    fx = load_fixes(part)[tidx] if fx is None else fx
     order = np.argsort(rows.fix.values, kind="stable")
     fix = rows.fix.values[order]
     arc = rows.arc.values[order].astype(np.int64)

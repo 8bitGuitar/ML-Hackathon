@@ -9,7 +9,7 @@
 import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent   # repository root
 
 API_HOST = os.environ.get("PATHSNAP_API_HOST", "0.0.0.0")
 API_PORT = int(os.environ.get("PATHSNAP_API_PORT", "8000"))
@@ -28,6 +28,8 @@ EVAL_DIR = _first_existing(
     ROOT / "Student folder" / "student_test",
     ROOT.parent / "Student folder" / "student_test",
 )
-MODEL_DIR = Path(os.environ.get("PATHSNAP_MODEL_DIR", ROOT / "models_out" / "final_model"))
-PIPELINE_DIR = ROOT / "pipeline"
-ANALYSIS_DIR = ROOT / "dataset_analysis"
+MODEL_DIR = Path(os.environ.get("PATHSNAP_MODEL_DIR", ROOT / "results" / "final_model"))
+# code folders the API imports from
+DATA_PROCESSING_DIR = ROOT / "data_processing"
+HMM_DIR = ROOT / "hmm_viterbi"
+TRAINING_DIR = ROOT / "model_training"

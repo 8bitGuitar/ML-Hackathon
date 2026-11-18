@@ -7,7 +7,7 @@ import sys
 import folium
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data_processing"))
 from analyze import load_trip  # noqa: E402
 
 

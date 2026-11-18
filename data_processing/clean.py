@@ -17,7 +17,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dataset_analysis"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from analyze import dwell_mask, load_trip, monotone_labels, project, pt_seg_dist  # noqa: E402
 
 # thresholds (chosen from train-data exploration, frozen here)

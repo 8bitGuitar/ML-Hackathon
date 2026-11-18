@@ -6,7 +6,7 @@ in exactly the same way:
   * the GroupKFold(5)-by-trip folds,
   * the metrics (top-1, macro F1, log loss, precision/recall/F1, confusion matrix, route continuity, route F1),
   * the cross-validation loop and the final fit + student_test evaluation,
-  * saving results to models_out/<model>/.
+  * saving results to results/<model>/.
 """
 import json
 import os
@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FEAT_DIR = ROOT / "data_features"
 CLEAN_DIR = ROOT / "data_clean"
 RAW_DIR = ROOT / "Student folder"
-OUT_DIR = ROOT / "models_out"
+OUT_DIR = ROOT / "results"
 SEED = 42
 N_FOLDS = 5
 TRIP_STRIDE = 100_000  # gid = trip_index * TRIP_STRIDE + fix (largest trip has 19 313 fixes)

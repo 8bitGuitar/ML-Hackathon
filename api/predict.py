@@ -3,7 +3,7 @@
     from predict import match_trip
     result = match_trip("Student folder/student_test/00000007")
 
-Pipeline, in order (same code and constants as the notebooks; see pipeline/clean.py and feature_engineering.ipynb):
+Pipeline, in order (same code and constants as the notebooks; see data_processing/clean.py and feature_engineering/feature_engineering.ipynb):
   1. cleaning that needs only GPS and map: projection (C1), time gaps / segments (C2), speeds (C3), heading, dwell
      detection, position jumps (C8), eligible arcs (C9)
   2. candidate search: eligible arcs within 50 m of each fix (at least 5 per fix)
@@ -22,11 +22,13 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import cKDTree
 
-import config
+# make the other code folders importable (config lives in deployment/, the pipeline code in the folders below)
+_REPO = Path(__file__).resolve().parent.parent
+for _d in ("deployment", "data_processing", "hmm_viterbi", "model_training"):
+    if str(_REPO / _d) not in sys.path:
+        sys.path.insert(0, str(_REPO / _d))
 
-for _p in (config.PIPELINE_DIR, config.ANALYSIS_DIR):
-    if str(_p) not in sys.path:
-        sys.path.insert(0, str(_p))
+import config  # noqa: E402
 
 from analyze import dwell_mask, project  # noqa: E402
 from pathsnap_hmm import TripNet, prepare_trip, reconstruct_route, viterbi_trip  # noqa: E402

@@ -12,17 +12,22 @@ Every request is printed to the terminal (method, path, status, time) and every 
 import json
 import logging
 import re
+import sys
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-import config
-import predict
-import scoring
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "deployment"))   # config.py
+sys.path.insert(0, str(Path(__file__).resolve().parent))                           # predict.py, scoring.py
+
+import config  # noqa: E402
+import predict  # noqa: E402
+import scoring  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 log = logging.getLogger("pathsnap")

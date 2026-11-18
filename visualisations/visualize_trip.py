@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 
-DATA_ROOT = Path(__file__).parent / "Student folder"
+DATA_ROOT = Path(__file__).resolve().parent.parent / "Student folder"
 
 
 def resolve_trip(arg):
