@@ -1,0 +1,116 @@
+{
+ "n_train_rows": 1801387,
+ "n_train_fixes": 173637,
+ "cand_per_fix_train": 10.091350513633724,
+ "miss_rate_kept_train": 0.0,
+ "baseline_top1": 0.5664892020678302,
+ "full_top1": 0.8734269769030153,
+ "full_top1_std": 0.030868528823462797,
+ "selected": [
+  "dist",
+  "dist_rank",
+  "dist_gap",
+  "heading_diff",
+  "speed",
+  "along_t",
+  "arc_len",
+  "has_twin",
+  "junction_deg",
+  "n_cand20",
+  "n_cand50",
+  "nbr_dist",
+  "conn_prev"
+ ],
+ "dropped": [
+  [
+   "moving",
+   "permutation importance 0.023 pp"
+  ],
+  [
+   "dt",
+   "permutation importance 0.009 pp"
+  ]
+ ],
+ "selected_top1": 0.8732660145432689,
+ "selected_top1_std": 0.03135532878715053,
+ "perm": {
+  "dt": 9.142946743572189e-05,
+  "moving": 0.00023452470379530243,
+  "n_cand50": 0.0015761827757206249,
+  "n_cand20": 0.0016263049594822166,
+  "arc_len": 0.0021503603708362463,
+  "dist_rank": 0.002348097752503042,
+  "junction_deg": 0.0025001784052531397,
+  "speed": 0.003921872827022987,
+  "conn_prev": 0.004352407698598726,
+  "has_twin": 0.004833427646781763,
+  "nbr_dist": 0.011694266341771464,
+  "dist": 0.01884021708522634,
+  "along_t": 0.04325838466597798,
+  "dist_gap": 0.15196938937986812,
+  "heading_diff": 0.34126305507780036
+ },
+ "perm_std": {
+  "dt": 8.39155879382309e-05,
+  "moving": 0.0005019536143243243,
+  "n_cand50": 0.0017247478930495959,
+  "n_cand20": 0.0008583635213988423,
+  "arc_len": 0.0015897978499496914,
+  "dist_rank": 0.0014915886273487971,
+  "junction_deg": 0.0024046887513158605,
+  "speed": 0.0004635838911287308,
+  "conn_prev": 0.0018539978517061392,
+  "has_twin": 0.0012864928106972493,
+  "nbr_dist": 0.0034081674104392886,
+  "dist": 0.02467678213635297,
+  "along_t": 0.010797386374692316,
+  "dist_gap": 0.05470298565771706,
+  "heading_diff": 0.03453127121889573
+ },
+ "ablation": {
+  "distance only (F1-F3)": 0.5659932402799539,
+  "nearest-road baseline (no model)": 0.5664892020678302,
+  "without direction (F4-F6)": 0.6487096181280337,
+  "without map context (F7-F12)": 0.862053756283176,
+  "without sequence (F13-F14)": 0.868155046804023,
+  "without distance (F1-F3)": 0.8710981833409986,
+  "all features": 0.8734269769030153
+ },
+ "ablation_std": {
+  "distance only (F1-F3)": 0.03773570965879592,
+  "nearest-road baseline (no model)": 0.037885872616948535,
+  "without direction (F4-F6)": 0.051985341346777056,
+  "without map context (F7-F12)": 0.028462040574849815,
+  "without sequence (F13-F14)": 0.030190905759849746,
+  "without distance (F1-F3)": 0.029516502814862892,
+  "all features": 0.030868528823462797
+ },
+ "corr_pairs": [
+  [
+   "dist",
+   "dist_gap",
+   0.961
+  ],
+  [
+   "dist",
+   "nbr_dist",
+   0.939
+  ],
+  [
+   "dist_gap",
+   "nbr_dist",
+   0.92
+  ],
+  [
+   "has_twin",
+   "junction_deg",
+   0.707
+  ]
+ ],
+ "student_test": {
+  "model top-1 (reliable-label fixes)": 0.8910119914826852,
+  "model top-1 (all fixes)": 0.863830897703549,
+  "nearest-road top-1 (reliable-label fixes)": 0.55396167208338,
+  "nearest-road top-1 (all fixes)": 0.5413361169102296
+ }
+}

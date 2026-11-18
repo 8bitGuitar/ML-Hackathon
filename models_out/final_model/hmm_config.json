@@ -1,0 +1,13 @@
+{
+ "beta": 3.0,
+ "vmax": 50.0,
+ "slack": 30.0,
+ "back_tol": 15.0,
+ "limit": 2500.0,
+ "p_floor": 1e-06,
+ "classifier": "hgb_tuned",
+ "emission": "log normalised classifier probability",
+ "transition": "-|d_route - d_line| / beta, -inf if d_route > vmax*dt + slack",
+ "gap_s": 60,
+ "skip": "C8 position jumps and fixes without candidates (inherit previous arc)"
+}

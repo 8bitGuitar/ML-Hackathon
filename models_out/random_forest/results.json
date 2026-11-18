@@ -1,0 +1,78 @@
+{
+ "name": "random_forest",
+ "family": "Ensemble (bagging)",
+ "config": {
+  "n_estimators": 200,
+  "max_features": "sqrt",
+  "min_samples_leaf": 20,
+  "max_depth": null,
+  "bootstrap": true,
+  "criterion": "gini",
+  "train_frac": 0.25,
+  "random_state": 42
+ },
+ "cv_mean": {
+  "val_trips": 16.0,
+  "train_rows": 360023.2,
+  "fit_s": 75.06789088249207,
+  "predict_s": 2.5966872692108156,
+  "predict_ms_per_1k_fixes": 63.25219061897717,
+  "train_top1": 0.8958299999999999,
+  "train_logloss": 0.05391543694580157,
+  "val_top1": 0.8713140470950839,
+  "val_logloss": 0.06764285638928413,
+  "val_macro_f1": 0.741838420564046,
+  "val_top1_all": 0.7634846048329778,
+  "val_continuity": 0.9655622295550845,
+  "val_route_f1": 0.8711252317269025,
+  "val_precision": 0.8974132070080045,
+  "val_recall": 0.8300190567245768,
+  "val_f1": 0.8623890254927169
+ },
+ "cv_std": {
+  "val_trips": 0.0,
+  "train_rows": 1353.1898240823423,
+  "fit_s": 4.363267786554447,
+  "predict_s": 0.18628881932226996,
+  "predict_ms_per_1k_fixes": 9.075025786237552,
+  "train_top1": 0.006698656581733395,
+  "train_logloss": 0.003564819431155551,
+  "val_top1": 0.03481951445603346,
+  "val_logloss": 0.01725666746185931,
+  "val_macro_f1": 0.05359448913553509,
+  "val_top1_all": 0.10245186124868316,
+  "val_continuity": 0.014747924179788997,
+  "val_route_f1": 0.032400624077184983,
+  "val_precision": 0.030712158660616915,
+  "val_recall": 0.03220623862447077,
+  "val_f1": 0.03141317474904327
+ },
+ "student_test": {
+  "top1": 0.8869214389779222,
+  "top1_all": 0.8656054279749478,
+  "macro_f1": 0.7604691994987628,
+  "continuity": 0.9747764295731827,
+  "route_f1": 0.9083884442433681,
+  "route_p": 0.8541855790436397,
+  "route_r": 0.975574917716737,
+  "logloss": 0.054113006343245916,
+  "precision": 0.9069063723745105,
+  "recall": 0.856494452538384,
+  "f1": 0.8809798270893372,
+  "cm": [
+   [
+    186884,
+    1569
+   ],
+   [
+    2561,
+    15285
+   ]
+  ],
+  "fit_s": 106.93469977378845,
+  "predict_s": 1.7819030284881592,
+  "predict_ms_per_1k_fixes": 93.00120190439245,
+  "train_rows": 450484
+ },
+ "seed": 42
+}

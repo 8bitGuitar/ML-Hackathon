@@ -1,0 +1,8 @@
+Model,Family,Key configuration,CV Macro F1,CV Top-1,Test Top-1,Test Top-1 (all fixes),Route continuity,Test Macro F1,Log Loss,Precision,Recall,F1,Train time (s),Inference (ms / 1k fixes)
+Logistic Regression,Linear / probabilistic,"C=1.0, penalty=l2, max_iter=500; train_frac=0.4",0.7090 ± 0.0495,0.8620 ± 0.0308,0.8708,0.8368,0.9695,0.7229,0.0746,0.8485,0.845,0.8468,3.2,4.0
+Gaussian NB,Probabilistic (generative),; train_frac=1.0,0.5559 ± 0.0257,0.7618 ± 0.0375,0.782,0.7544,0.9667,0.5732,0.7279,0.4884,0.9135,0.6365,4.5,5.8
+kNN (k=50),Instance-based,"n_neighbors=50, weights=distance; train_frac=0.05",0.6852 ± 0.0479,0.8507 ± 0.0281,0.8637,0.8336,0.9725,0.7026,0.0772,0.8655,0.8352,0.8501,0.1,5220.8
+Random Forest,Ensemble (bagging),"n_estimators=200, max_features=sqrt, min_samples_leaf=20; train_frac=0.25",0.7418 ± 0.0536,0.8713 ± 0.0348,0.8869,0.8656,0.9748,0.7605,0.0541,0.9069,0.8565,0.881,106.9,93.0
+Hist Gradient Boosting,Boosting,"max_iter=200, learning_rate=0.1, max_leaf_nodes=31, min_samples_leaf=20, l2_regularization=0.0; train_frac=0.4",0.7353 ± 0.0612,0.8699 ± 0.0369,0.8864,0.8618,0.9691,0.7548,0.0637,0.8807,0.8821,0.8814,8.7,48.1
+MLP (64-32),Neural network,"hidden_layer_sizes=[64, 32], alpha=0.0001, learning_rate_init=0.001, batch_size=512, epochs=25; train_frac=0.4",0.7511 ± 0.0535,0.8724 ± 0.0351,0.8884,0.8513,0.9781,0.7721,0.0542,0.8898,0.8737,0.8817,170.2,14.7
+Nearest road (rule),Heuristic baseline,pick smallest dist,0.3796 ± 0.0332,0.5665 ± 0.0424,0.554,0.5413,0.9395,0.3761,N/A (no probabilities),N/A,N/A,N/A,0.0,N/A

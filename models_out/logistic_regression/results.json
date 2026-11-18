@@ -1,0 +1,76 @@
+{
+ "name": "logistic_regression",
+ "family": "Linear / probabilistic",
+ "config": {
+  "C": 1.0,
+  "penalty": "l2",
+  "solver": "lbfgs",
+  "max_iter": 500,
+  "preprocessing": "log1p+standardise, one-hot conn_prev",
+  "train_frac": 0.4
+ },
+ "cv_mean": {
+  "val_trips": 16.0,
+  "train_rows": 576251.8,
+  "fit_s": 2.7845956802368166,
+  "predict_s": 0.3121811866760254,
+  "predict_ms_per_1k_fixes": 7.584402654548735,
+  "train_top1": 0.85914,
+  "train_logloss": 0.0890122570176936,
+  "val_top1": 0.8620027635413698,
+  "val_logloss": 0.08926784098148347,
+  "val_macro_f1": 0.709027377943608,
+  "val_top1_all": 0.7536319586760593,
+  "val_continuity": 0.9610536055713738,
+  "val_route_f1": 0.8588026073031149,
+  "val_precision": 0.8464848842025537,
+  "val_recall": 0.8159197690433897,
+  "val_f1": 0.8308097456020722
+ },
+ "cv_std": {
+  "val_trips": 0.0,
+  "train_rows": 1896.1275537262782,
+  "fit_s": 0.17431571282339767,
+  "predict_s": 0.017675560974341035,
+  "predict_ms_per_1k_fixes": 0.8167925834295161,
+  "train_top1": 0.007100827416576189,
+  "train_logloss": 0.0036522031291225257,
+  "val_top1": 0.030831486564527128,
+  "val_logloss": 0.01670941751236802,
+  "val_macro_f1": 0.0494832891163874,
+  "val_top1_all": 0.10493359577507794,
+  "val_continuity": 0.015236009642180498,
+  "val_route_f1": 0.03393124656267763,
+  "val_precision": 0.022370547068623445,
+  "val_recall": 0.02750700582856249,
+  "val_f1": 0.02288855344990475
+ },
+ "student_test": {
+  "top1": 0.8708394037879637,
+  "top1_all": 0.8367954070981211,
+  "macro_f1": 0.7229336340962085,
+  "continuity": 0.9695026665287572,
+  "route_f1": 0.8968191967471908,
+  "route_p": 0.8365343972655079,
+  "route_r": 0.9724184098540661,
+  "logloss": 0.07462158292161751,
+  "precision": 0.8485257708755346,
+  "recall": 0.8450072845455564,
+  "f1": 0.8467628727048122,
+  "cm": [
+   [
+    185761,
+    2692
+   ],
+   [
+    2766,
+    15080
+   ]
+  ],
+  "fit_s": 3.221696615219116,
+  "predict_s": 0.07672595977783203,
+  "predict_ms_per_1k_fixes": 4.004486418467225,
+  "train_rows": 721693
+ },
+ "seed": 42
+}

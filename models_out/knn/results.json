@@ -1,0 +1,75 @@
+{
+ "name": "knn",
+ "family": "Instance-based",
+ "config": {
+  "n_neighbors": 50,
+  "weights": "distance",
+  "metric": "euclidean",
+  "preprocessing": "log1p+standardise, one-hot conn_prev",
+  "train_frac": 0.05
+ },
+ "cv_mean": {
+  "val_trips": 16.0,
+  "train_rows": 71856.6,
+  "fit_s": 0.08820810317993164,
+  "predict_s": 157.33573336601256,
+  "predict_ms_per_1k_fixes": 3802.121227338184,
+  "train_top1": 1.0,
+  "train_logloss": 1.1397551677247661e-07,
+  "val_top1": 0.8507476372690723,
+  "val_logloss": 0.09555471241474152,
+  "val_macro_f1": 0.6851590239586051,
+  "val_top1_all": 0.7454354255720729,
+  "val_continuity": 0.9681228650866528,
+  "val_route_f1": 0.8632557955519138,
+  "val_precision": 0.8541175675834676,
+  "val_recall": 0.8170707935163388,
+  "val_f1": 0.8351681348310924
+ },
+ "cv_std": {
+  "val_trips": 0.0,
+  "train_rows": 870.8219106108895,
+  "fit_s": 0.017492204329628433,
+  "predict_s": 17.392897542795527,
+  "predict_ms_per_1k_fixes": 319.195083861379,
+  "train_top1": 0.0,
+  "train_logloss": 5.788864549759714e-09,
+  "val_top1": 0.02813250378497788,
+  "val_logloss": 0.021610509270617202,
+  "val_macro_f1": 0.047884833084256256,
+  "val_top1_all": 0.10251295670401707,
+  "val_continuity": 0.01222533643925319,
+  "val_route_f1": 0.033799175729533046,
+  "val_precision": 0.02211612837124138,
+  "val_recall": 0.027684943313275298,
+  "val_f1": 0.024943347375054065
+ },
+ "student_test": {
+  "top1": 0.8637229631289924,
+  "top1_all": 0.8335594989561587,
+  "macro_f1": 0.7025529757519576,
+  "continuity": 0.9725305411225397,
+  "route_f1": 0.8988691386746117,
+  "route_p": 0.8404990217025453,
+  "route_r": 0.9711765206363653,
+  "logloss": 0.07718143091131113,
+  "precision": 0.8655130364090354,
+  "recall": 0.8352011655272891,
+  "f1": 0.8500869763595403,
+  "cm": [
+   [
+    186137,
+    2316
+   ],
+   [
+    2941,
+    14905
+   ]
+  ],
+  "fit_s": 0.09353804588317871,
+  "predict_s": 100.0298182964325,
+  "predict_ms_per_1k_fixes": 5220.762959103992,
+  "train_rows": 90033
+ },
+ "seed": 42
+}

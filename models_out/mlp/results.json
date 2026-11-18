@@ -1,0 +1,83 @@
+{
+ "name": "mlp",
+ "family": "Neural network",
+ "config": {
+  "hidden_layer_sizes": [
+   64,
+   32
+  ],
+  "activation": "relu",
+  "alpha": 0.0001,
+  "learning_rate_init": 0.001,
+  "batch_size": 512,
+  "epochs": 25,
+  "optimizer": "adam",
+  "preprocessing": "log1p+standardise, one-hot conn_prev",
+  "train_frac": 0.4,
+  "random_state": 42
+ },
+ "cv_mean": {
+  "val_trips": 16.0,
+  "train_rows": 576251.8,
+  "fit_s": 119.74697737693786,
+  "predict_s": 1.0491498947143554,
+  "predict_ms_per_1k_fixes": 25.805936402566772,
+  "train_top1": 0.88041,
+  "train_logloss": 0.06188096925616264,
+  "val_top1": 0.8724475181549103,
+  "val_logloss": 0.06860764995217324,
+  "val_macro_f1": 0.751121446347644,
+  "val_top1_all": 0.7632648584778436,
+  "val_continuity": 0.9716246547236203,
+  "val_route_f1": 0.8785812282487298,
+  "val_precision": 0.8848069472758135,
+  "val_recall": 0.8433093864017567,
+  "val_f1": 0.8634279041263546
+ },
+ "cv_std": {
+  "val_trips": 0.0,
+  "train_rows": 1896.1275537262782,
+  "fit_s": 30.0037810808115,
+  "predict_s": 0.22480982023114582,
+  "predict_ms_per_1k_fixes": 7.84915159433391,
+  "train_top1": 0.007972954283074764,
+  "train_logloss": 0.004409523658426125,
+  "val_top1": 0.03509123260674578,
+  "val_logloss": 0.01966857326650406,
+  "val_macro_f1": 0.05345733875460497,
+  "val_top1_all": 0.1025304167330727,
+  "val_continuity": 0.011242445452133196,
+  "val_route_f1": 0.03340426492991367,
+  "val_precision": 0.027574328331540957,
+  "val_recall": 0.040549207084074765,
+  "val_f1": 0.032916483322230676
+ },
+ "student_test": {
+  "top1": 0.8883783480892077,
+  "top1_all": 0.8512526096033403,
+  "macro_f1": 0.7720664397733266,
+  "continuity": 0.978119043644311,
+  "route_f1": 0.9108748598715735,
+  "route_p": 0.8586667536436,
+  "route_r": 0.975800248590932,
+  "logloss": 0.054242122918367386,
+  "precision": 0.8898019745477372,
+  "recall": 0.8736971870447159,
+  "f1": 0.8816760439933274,
+  "cm": [
+   [
+    186522,
+    1931
+   ],
+   [
+    2254,
+    15592
+   ]
+  ],
+  "fit_s": 170.1726953983307,
+  "predict_s": 0.2809631824493408,
+  "predict_ms_per_1k_fixes": 14.664049188378957,
+  "train_rows": 721693
+ },
+ "seed": 42
+}
