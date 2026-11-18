@@ -5,9 +5,12 @@
  "back_tol": 15.0,
  "limit": 2500.0,
  "p_floor": 1e-06,
+ "min_move": 30.0,
  "classifier": "hgb_tuned",
  "emission": "log normalised classifier probability",
  "transition": "-|d_route - d_line| / beta, -inf if d_route > vmax*dt + slack",
  "gap_s": 60,
- "skip": "C8 position jumps and fixes without candidates (inherit previous arc)"
+ "skip": "C8 position jumps and fixes without candidates are left out of the Viterbi chain",
+ "thinning": "a fix closer than min_move metres to the last decoded fix is not decoded",
+ "snapping": "every fix is assigned to an arc of the reconstructed route, in travel order, smallest total distance"
 }

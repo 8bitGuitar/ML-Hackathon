@@ -4,7 +4,8 @@ Given a noisy GPS trip and a road network, PathSnap predicts which road segment 
 every fix and reconstructs the driven route.
 
 **Method:** for each GPS fix, candidate arcs within 50 m are generated and described by 13 features. A tuned
-HistGradientBoosting classifier scores each candidate. An HMM decoded with Viterbi then picks one connected route.
+HistGradientBoosting classifier scores each candidate. An HMM decoded with Viterbi then picks one connected route,
+and every fix is snapped onto that route in travel order to get its road segment.
 A FastAPI backend serves this for unseen trips and a browser UI shows the result on a map.
 
 ## Results (10 held-out `student_test` trips)
@@ -13,7 +14,7 @@ A FastAPI backend serves this for unseen trips and a browser UI shows the result
 |---|---|---|---|---|
 | Nearest-road baseline | 55.4% | 0.376 | 0.940 | n/a |
 | Best single classifiers (MLP, Random Forest, HGB) | 88.6–88.8% | 0.755–0.772 | 0.969–0.978 | n/a |
-| **Tuned HGB + HMM/Viterbi (final)** | **94.5%** | **0.929** | **0.9994** | **0.981** |
+| **Tuned HGB + HMM/Viterbi + route snapping (final)** | **97.6%** | **0.987** | **0.9991** | **0.986** |
 
 Full tables are in `results/comparison/` and `results/hmm/`.
 
@@ -26,7 +27,7 @@ Full tables are in `results/comparison/` and `results/hmm/`.
 | `model_training/` | `pathsnap_common.py` (shared loading, CV folds, metrics) and one notebook per model: logistic regression, Gaussian NB, kNN, random forest, hist gradient boosting, MLP |
 | `model_evaluation/` | `model_comparison.ipynb`: comparison table, plots, paired tests, stability and overfit checks |
 | `bayesian_optimisation/` | `bayesian_optimisation.ipynb`: Optuna search for the HGB model (search space and objective in the notebook) |
-| `hmm_viterbi/` | `pathsnap_hmm.py` (HMM, Viterbi, route reconstruction) and `hmm_viterbi.ipynb` (tuning and evaluation) |
+| `hmm_viterbi/` | `pathsnap_hmm.py` (HMM, Viterbi, thinning, route reconstruction, snapping fixes to the route) and `hmm_viterbi.ipynb` (tuning and evaluation) |
 | `api/` | FastAPI backend: `api.py` (endpoints, logging), `predict.py` (raw trip to route), `scoring.py` (server-side scoring) |
 | `ui/` | Evaluator interface: `index.html`, `app.js`, `style.css`, `config.js`, bundled Leaflet |
 | `deployment/` | `config.py` (API address, port, data paths), `requirements.txt`, `run_api.sh`, `run_ui.sh` |
@@ -107,7 +108,7 @@ writes route maps to `results/hmm/maps/`.
 | **Train a model** (`model_training/`) | Open one notebook, for example `04_random_forest.ipynb`, and run all cells. It cross-validates by trip, fits on all training trips, scores `student_test`, and saves to `results/<model>/`. `pathsnap_common.py` holds the code all six share, so the models are scored identically. |
 | **Tune with Bayesian optimisation** (`bayesian_optimisation/`) | Run `bayesian_optimisation.ipynb`. The Optuna study is saved in `results/bayes_opt/study.db` and every trial in `results/bayes_opt/trials.csv`. |
 | **Compare models** (`model_evaluation/`) | Run `model_comparison.ipynb` after the models are trained. It writes the comparison table and plots to `results/comparison/`. |
-| **Decode routes with the HMM** (`hmm_viterbi/`) | Run `hmm_viterbi.ipynb`. It tunes the HMM, compares it with the classifier alone and writes `results/hmm/` including the route maps. To use the decoder from code: `from pathsnap_hmm import TripNet, prepare_trip, viterbi_trip, reconstruct_route`. |
+| **Decode routes with the HMM** (`hmm_viterbi/`) | Run `hmm_viterbi.ipynb`. It tunes the HMM, compares it with the classifier alone and writes `results/hmm/` including the route maps. To use the decoder from code: `from pathsnap_hmm import TripNet, prepare_trip, decode_trip` (`decode_trip` runs Viterbi, route reconstruction and snapping in order). |
 | **Predict one trip from code** (`api/predict.py`) | `python api/predict.py "<path to a trip folder>"` runs the whole pipeline on one raw trip. In Python: `from predict import match_trip`. |
 | **Serve predictions** (`api/api.py`) | See "Run the API and UI". Endpoints: `GET /health`, `GET /trips`, `POST /predict {"trip_id": "..."}`. Interactive docs are at `http://<laptop 1 IP>:8000/docs`. |
 | **Show results to evaluators** (`ui/`) | See "Run the API and UI". |

@@ -1,0 +1,5 @@
+,student_test top-1,train (out-of-fold) top-1
+1. classifier only,0.8929732152863387,0.8732355431158105
+2. + Viterbi on every fix (beta 1.5),0.9455900481900706,0.9408824156141836
+3. + fixes snapped onto the route,0.9692368037655497,0.9724943416437741
+"4. + thinning (min_move 30 m, beta 3) = final",0.9761851395270649,0.979606881021902

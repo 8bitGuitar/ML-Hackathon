@@ -12,6 +12,14 @@ Breaks          : the chain is cut and restarted (a) at segment boundaries (time
                   (b) when no candidate of the new fix is reachable from any candidate of the previous one.
 Skipped fixes   : position jumps (cleaning C8) and fixes without candidates are not decoded; they inherit the
                   arc of the nearest decoded fix before them (or after, at the start).
+Thinning        : a fix closer than min_move metres to the last decoded fix is not decoded (Newson & Krumm drop
+                  such fixes too). GPS noise here is several metres per fix, so between two fixes one second apart
+                  the noise is as large as the real movement and d_line says little; while the car is parked the
+                  fixes only jitter. Decoding one fix every min_move metres keeps the transition term meaningful.
+Route           : reconstruct_route joins the decoded arcs into one connected arc sequence (shortest-path fill).
+Snapping        : snap_to_route then gives EVERY fix (also the thinned and skipped ones) its arc on that route:
+                  fixes are assigned to route positions in travel order (never going back along the route) so
+                  that the total fix-to-arc distance is smallest. decode_trip runs the three steps in order.
 """
 import sys
 from pathlib import Path
@@ -21,10 +29,12 @@ import pandas as pd
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "model_training"))
+for _d in ("model_training", "data_processing"):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / _d))
+from analyze import pt_seg_dist  # noqa: E402
 from pathsnap_common import load_arcs, load_fixes  # noqa: E402
 
-DEFAULTS = dict(beta=5.0, vmax=50.0, slack=30.0, back_tol=15.0, limit=2500.0, p_floor=1e-6)
+DEFAULTS = dict(beta=5.0, vmax=50.0, slack=30.0, back_tol=15.0, limit=2500.0, p_floor=1e-6, min_move=0.0)
 
 
 class TripNet:
@@ -91,8 +101,10 @@ def prepare_trip(part, tidx, rows, p, net=None, limit=DEFAULTS["limit"], fx=None
 
 
 def viterbi_trip(prep, beta=DEFAULTS["beta"], vmax=DEFAULTS["vmax"], slack=DEFAULTS["slack"],
-                 back_tol=DEFAULTS["back_tol"], p_floor=DEFAULTS["p_floor"]):
-    """Decode one trip. Returns (predicted arc per fix, number of chain breaks, decoded-fix mask)."""
+                 back_tol=DEFAULTS["back_tol"], p_floor=DEFAULTS["p_floor"], min_move=DEFAULTS["min_move"]):
+    """Decode one trip. Returns (predicted arc per fix, number of chain breaks, decoded-fix mask).
+    min_move > 0 thins the fixes: a fix closer than min_move metres to the last decoded fix of the same segment
+    is left out of the chain (it inherits an arc afterwards, like the other skipped fixes)."""
     net, fx, cands, table = prep["net"], prep["fx"], prep["cands"], prep["table"]
     n = len(fx)
     X, Y, T, SEG, JUMP = fx.x.values, fx.y.values, fx.t.values, fx.segment.values, fx.jump.values
@@ -102,6 +114,9 @@ def viterbi_trip(prep, beta=DEFAULTS["beta"], vmax=DEFAULTS["vmax"], slack=DEFAU
     for k in range(n):
         if k not in cands or JUMP[k]:
             continue                                   # skipped fix: filled from neighbours afterwards
+        if (min_move > 0 and prev is not None and SEG[k] == SEG[prev]
+                and np.hypot(X[k] - X[prev], Y[k] - Y[prev]) < min_move):
+            continue                                   # thinned fix: has not moved far enough from the last one
         A, tA, pA = cands[k]
         q = np.maximum(pA, p_floor)
         e = np.log(q / q.sum())                        # emission: normalised classifier probability
@@ -167,3 +182,54 @@ def reconstruct_route(net, pred, limit=DEFAULTS["limit"]):
             route.extend(mid)
         route.append(int(b))
     return np.array(route, dtype=np.int64), holes
+
+
+def snap_to_route(x, y, route, fr, to, nx, ny, chunk=256):
+    """Arc of every fix on a given route (arc sequence), with the fixes kept in travel order.
+
+    Each fix gets a position in the route. Positions may never decrease from one fix to the next, and among all
+    such assignments the one with the smallest total fix-to-arc distance is chosen (dynamic programming:
+    cost_k(m) = dist(fix k, route arc m) + min over m' <= m of cost_{k-1}(m')). This is the same rule
+    data_processing/clean.py uses to turn a reference route into per-fix labels, applied here to the PREDICTED
+    route, so prediction and label follow one convention about where one arc ends and the next begins.
+
+    The distance matrix is built `chunk` fixes at a time and only the back-pointers are stored (2 bytes per
+    fix x route arc), so a 20 000-fix trip on a 2 000-arc route needs about 80 MB.
+    """
+    route = np.asarray(route, dtype=np.int64)
+    n, m = len(x), len(route)
+    if m == 0:
+        return np.full(n, -1, dtype=np.int64)
+    ax, ay, bx, by = nx[fr[route]][None], ny[fr[route]][None], nx[to[route]][None], ny[to[route]][None]
+    back = np.empty((n, m), dtype=np.uint16 if m < 65535 else np.int32)
+    idx = np.arange(m)
+    cost = None
+    for s0 in range(0, n, chunk):
+        D, _ = pt_seg_dist(x[s0:s0 + chunk, None], y[s0:s0 + chunk, None], ax, ay, bx, by)
+        D = D.astype(np.float32)                       # same rounding as the label code
+        for i in range(len(D)):
+            if cost is None:
+                cost, back[0] = D[0].astype(np.float64), idx
+                continue
+            pm = np.minimum.accumulate(cost)           # best cost among route positions <= m ...
+            is_new = np.r_[True, cost[1:] < pm[:-1]]
+            back[s0 + i] = np.maximum.accumulate(np.where(is_new, idx, 0))   # ... and where it was reached
+            cost = pm + D[i]
+    pos = np.empty(n, dtype=np.int64)
+    pos[-1] = int(np.argmin(cost))
+    for i in range(n - 1, 0, -1):
+        pos[i - 1] = back[i, pos[i]]
+    return route[pos]
+
+
+def decode_trip(prep, nx, ny, beta=DEFAULTS["beta"], vmax=DEFAULTS["vmax"], slack=DEFAULTS["slack"],
+                back_tol=DEFAULTS["back_tol"], p_floor=DEFAULTS["p_floor"], min_move=DEFAULTS["min_move"],
+                limit=DEFAULTS["limit"], snap=True):
+    """The whole decoder for one trip: Viterbi -> connected route -> every fix snapped onto that route.
+    nx, ny are the projected node coordinates. Returns dict(fix_arc, viterbi_arc, route, breaks, holes)."""
+    net, fx = prep["net"], prep["fx"]
+    vit, breaks, _ = viterbi_trip(prep, beta=beta, vmax=vmax, slack=slack, back_tol=back_tol, p_floor=p_floor,
+                                  min_move=min_move)
+    route, holes = reconstruct_route(net, vit, limit=limit)
+    fix_arc = snap_to_route(fx.x.values, fx.y.values, route, net.fr, net.to, nx, ny) if snap and len(route) else vit
+    return dict(fix_arc=fix_arc, viterbi_arc=vit, route=route, breaks=breaks, holes=holes)
