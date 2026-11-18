@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathSnap</title>
+  <link rel="stylesheet" href="vendor/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <h1>PathSnap</h1>
+    <p class="sub">Map-matching evaluation</p>
+
+    <div class="panel">
+    <form id="conn-form" class="field">
+      <label for="api-url">API address</label>
+      <input id="api-url" type="text" spellcheck="false" autocomplete="off">
+      <button type="submit">Connect</button>
+      <span id="status" class="status">Not connected</span>
+    </form>
+
+    <div class="field">
+      <label for="trip">Trip</label>
+      <select id="trip" disabled></select>
+      <button id="run" disabled>Run</button>
+      <span id="busy" class="status" hidden>Running…</span>
+    </div>
+
+    </div>
+
+    <p id="error" class="error" hidden></p>
+
+    <section id="results" class="panel" hidden>
+      <h2>Results for trip <span id="r-trip"></span></h2>
+      <table class="scores">
+        <tr><th>Accuracy</th><th>Route continuity</th><th>Route F1</th><th>GPS fixes</th></tr>
+        <tr><td id="m-acc"></td><td id="m-cont"></td><td id="m-f1"></td><td id="m-fix"></td></tr>
+      </table>
+      <p id="r-note" class="note"></p>
+    </section>
+
+    <div id="map"></div>
+    <p class="note">Blue line: predicted route. Dark dots: GPS fixes.</p>
+  </div>
+
+  <script src="vendor/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
