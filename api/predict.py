@@ -9,7 +9,8 @@ Pipeline, in order (same code and constants as the notebooks; see data_processin
   2. candidate search: eligible arcs within 50 m of each fix (at least 5 per fix)
   3. features F1-F14 (the 13 selected ones)
   4. tuned HistGradientBoosting classifier -> probability per candidate
-  5. HMM / Viterbi (pathsnap_hmm.py) -> one arc per fix, then a connected arc sequence = the route
+  5. HMM / Viterbi (pathsnap_hmm.py) -> a connected arc sequence = the route, then every fix is snapped onto
+     that route in travel order -> one arc per fix
 """
 import json
 import sys
@@ -31,7 +32,7 @@ for _d in ("deployment", "data_processing", "hmm_viterbi", "model_training"):
 import config  # noqa: E402
 
 from analyze import dwell_mask, project  # noqa: E402
-from pathsnap_hmm import TripNet, prepare_trip, reconstruct_route, viterbi_trip  # noqa: E402
+from pathsnap_hmm import TripNet, decode_trip, prepare_trip  # noqa: E402
 
 # constants frozen in the cleaning / feature notebooks
 GAP_S = 60.0
@@ -220,12 +221,12 @@ def match_arrays(track, nodes, arcs):
     net = TripNet(arrays=(arcs_df["from"].values, arcs_df["to"].values, arcs_df.length_m.values.astype(float),
                           arcs_df.candidate_eligible.values))
     prep = prepare_trip(None, None, cand, p, net=net, limit=hmm_cfg["limit"], fx=fx)
-    pred, breaks, _ = viterbi_trip(prep, beta=hmm_cfg["beta"], vmax=hmm_cfg["vmax"], slack=hmm_cfg["slack"],
-                                   back_tol=hmm_cfg["back_tol"], p_floor=hmm_cfg["p_floor"])
-    route, holes = reconstruct_route(net, pred, limit=hmm_cfg["limit"])
+    dec = decode_trip(prep, nx, ny, beta=hmm_cfg["beta"], vmax=hmm_cfg["vmax"], slack=hmm_cfg["slack"],
+                      back_tol=hmm_cfg["back_tol"], p_floor=hmm_cfg["p_floor"], min_move=hmm_cfg["min_move"],
+                      limit=hmm_cfg["limit"])
     timing["hmm_s"] = time.perf_counter() - t0
-    return dict(fix_arc=pred, route=route, holes=int(holes), breaks=int(breaks), n_candidates=len(cand),
-                timing=timing)
+    return dict(fix_arc=dec["fix_arc"], route=dec["route"], holes=int(dec["holes"]), breaks=int(dec["breaks"]),
+                n_candidates=len(cand), timing=timing)
 
 
 def route_polyline(route, nodes, arcs):

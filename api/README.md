@@ -1,7 +1,7 @@
 # PathSnap API (backend): what was built
 
 The backend takes one raw GPS trip, matches it to the road network with the final model (tuned HistGradientBoosting
-classifier + HMM/Viterbi) and returns the predicted route with accuracy and route continuity. It runs on laptop 1.
+classifier + HMM/Viterbi + route snapping) and returns the predicted route with accuracy and route continuity. It runs on laptop 1.
 
 ## Files
 
@@ -24,8 +24,9 @@ Reads only `<id>.track`, `<id>.nodes` and `<id>.arcs`. The `.route` file is neve
    every 10 m along arcs).
 3. **Features:** the 13 selected features, copied from `feature_engineering.ipynb` with the label columns removed.
 4. **Classifier:** `results/final_model/classifier.joblib` gives a probability per candidate.
-5. **HMM:** `pathsnap_hmm.py` with the settings from `hmm_config.json` (beta 3, vmax 50 m/s, ...) gives one arc per
-   fix, then a connected arc sequence is built with shortest-path fill.
+5. **HMM:** `pathsnap_hmm.decode_trip` with the settings from `hmm_config.json` (beta 3, min_move 30 m, vmax 50 m/s, ...).
+   Viterbi runs on the fixes that moved at least min_move metres, the decoded arcs are joined into a connected arc
+   sequence with shortest-path fill, and every fix is then snapped onto that route in travel order (one arc per fix).
 
 The model and its two JSON configs are loaded once per process. Output: route arcs, a `[lat, lon]` polyline of the
 route, the GPS track, the arc chosen for each fix, and counts of HMM breaks and holes.
@@ -72,10 +73,11 @@ All 10 `student_test` trips were run through the live API.
 
 - Route F1 and continuity match `results/hmm/per_trip_student_test.csv` (checked on trips `00000007` and
   `00000009`).
-- Reliable-fix accuracy is within one fix of the notebook (trip `00000009`: 92.09% against 92.18%). Training rounds
+- Reliable-fix accuracy is within one fix of the notebook (trip `00000056`: 99.16% against 99.14%). Training rounds
   coordinates to 3 decimals, which probably explains the difference.
-- Accuracy ranges from 84.3% (`00000077`) to 100% (`00000052`). Continuity is 99.5% or higher on every trip.
-- Prediction takes 0.06 s to 1.2 s per trip.
+- Accuracy ranges from 89.4% (`00000077`) to 100% (`00000007`, `00000052`, `00000065`); over all 10 trips it is 97.6%.
+  Continuity is 99.4% or higher on every trip.
+- Prediction takes 0.1 s to 1.9 s per trip.
 
 ## Running it
 

@@ -75,6 +75,17 @@ def load_arcs(part, tidx):
     return (a["from"].values, a["to"].values, a.length_m.values.astype(float), a.candidate_eligible.values)
 
 
+@lru_cache(maxsize=8)
+def load_nodes_xy(part, tidx):
+    """Node coordinates in metres, in the same local projection as the cleaned fixes (cleaning step C1)."""
+    t = trips(part)[tidx]
+    nodes = np.loadtxt(RAW_DIR / part / t / f"{t}.nodes", dtype=float, ndmin=2)
+    o = json.load(open(CLEAN_DIR / part / t / "projection.json"))
+    r = 6371008.8
+    return (np.radians(nodes[:, 0] - o["lon0"]) * r * np.cos(np.radians(o["lat0"])),
+            np.radians(nodes[:, 1] - o["lat0"]) * r)
+
+
 def load_route(part, tidx):
     t = trips(part)[tidx]
     return np.loadtxt(RAW_DIR / part / t / f"{t}.route", dtype=int, ndmin=1)
