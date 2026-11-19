@@ -76,7 +76,7 @@ Open `http://localhost:8080/?api=http://<laptop 1 IP>:8000`, pick a trip and pre
    a safe fallback.
 2. On laptop 1, find its IP with `ip -4 addr` and allow port 8000 through its firewall if one is running.
 3. From laptop 2, check `curl http://<laptop 1 IP>:8000/health`. It should return `{"status":"ok"}`.
-4. Laptop 2 needs only the `ui/` folder and a browser. The map background loads from OpenStreetMap, so it needs
+4. Laptop 2 needs only the `ui/` folder and a browser. The map background loads from CARTO (OpenStreetMap data), so it needs
    internet; the route and GPS points draw without it.
 
 The true route never leaves laptop 1: the API returns only the predicted route, the GPS track and the scores.

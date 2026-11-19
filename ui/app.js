@@ -17,8 +17,10 @@
 
   // ---- map
   const map = L.map("map", { preferCanvas: true }).setView([43.39, 77.12], 11);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19, attribution: "&copy; OpenStreetMap contributors",
+  // CARTO light tiles (OpenStreetMap data). tile.openstreetmap.org blocks requests that carry no Referer.
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    subdomains: "abcd", maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
   }).addTo(map);
   let layer = L.layerGroup().addTo(map);
 
