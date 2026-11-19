@@ -17,10 +17,11 @@
 
   // ---- map
   const map = L.map("map", { preferCanvas: true }).setView([43.39, 77.12], 11);
-  // CARTO light tiles (OpenStreetMap data). tile.openstreetmap.org blocks requests that carry no Referer.
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    subdomains: "abcd", maxZoom: 19,
-    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+  // OpenStreetMap tiles. CARTO's free basemap URL now answers "API key required", so we use OSM directly.
+  // OSM blocks requests that carry no Referer, so serve the UI over http (run_ui.sh), not by opening index.html.
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
   let layer = L.layerGroup().addTo(map);
 

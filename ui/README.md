@@ -24,7 +24,7 @@ route on a map with the scores. It holds no data or model, so the true route nev
 3. **Error message:** a red box that names the problem (cannot reach the API, timeout, or the API's own error).
 4. **Results panel:** accuracy, route continuity, route F1 and number of GPS fixes, with a note on how many
    fixes the accuracy is measured on and how long matching took.
-5. **Map** (Leaflet + CARTO (OpenStreetMap data)): the predicted route as a blue line with green start and red end markers,
+5. **Map** (Leaflet + OpenStreetMap tiles): the predicted route as a blue line with green start and red end markers,
    and the GPS fixes as dark dots. The map zooms to fit the trip.
 
 ## API address
@@ -54,8 +54,8 @@ On laptop 2, from the `ui/` folder:
 python -m http.server 8080
 ```
 
-Open `http://localhost:8080/?api=http://<laptop 1 IP>:8000`. Opening `index.html` directly also works. Map tiles are
-loaded from CARTO (OpenStreetMap data), so laptop 2 needs internet access for the background map. The route and fixes draw
+Open `http://localhost:8080/?api=http://<laptop 1 IP>:8000`. Serve the UI over http as shown (opening `index.html` directly sends no Referer, and OpenStreetMap then blocks the map tiles). Map tiles are
+loaded from OpenStreetMap, so laptop 2 needs internet access for the background map. The route and fixes draw
 without it.
 
 ## Verification
